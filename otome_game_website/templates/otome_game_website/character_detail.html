@@ -1,0 +1,40 @@
+<!-- otome_game_website/templates/otome_game_website/character_detail.html -->
+
+<h1>{{ character.name }}</h1>
+{% if character.image %}
+            <br>
+            <img src="{{ character.image.url }}" alt="{{ character.name }}" style="width:100px; height:auto;">
+        {% endif %}
+<p>{{ character.storyline }}</p>
+
+{% if user.is_authenticated %}
+    <!-- Display rating form -->
+    <form method="post">
+        {% csrf_token %}
+        {{ rating_form.as_p }}
+        <button type="submit" name="rate">Rate</button>
+    </form>
+
+    <!-- Display comment form -->
+    <form method="post">
+        {% csrf_token %}
+        {{ comment_form.as_p }}
+        <button type="submit" name="comment">Comment</button>
+    </form>
+{% else %}
+    <p><a href="{% url 'login' %}?next={{ request.path }}">Log in</a> to rate and comment.</p>
+{% endif %}
+
+
+<!-- Display comments for the character -->
+<div>
+    {% for comment in character.comments.all %}
+        <p>{{ comment.user.username }}: {{ comment.text }}</p>
+    {% empty %}
+        <p>No comments yet.</p>
+    {% endfor %}
+</div>
+
+<div>
+    Overall Rating: {{ overall_rating }}
+</div>
